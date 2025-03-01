@@ -109,9 +109,9 @@ using GradeBook;
 
     public virtual double GetGPA(char letterGrade, StudentType studentType)
     {
+        // Start with the base GPA value based on letter grade
         double gpa = 0;
 
-        // Calculate GPA based on the letter grade
         switch (letterGrade)
         {
             case 'A':
@@ -131,18 +131,16 @@ using GradeBook;
                 break;
         }
 
-        // Check if the gradebook is weighted and adjust accordingly
-        if (IsWeighted)
-        {
-            // In a weighted gradebook, you might want to increase the GPA for weighted students
-            // For example, adding an additional point for weighted GPA calculation.
-            gpa += 0.5;  // You can customize this value as needed based on your specific weighting rules.
-        }
-
         // Add 1 point if the student is Honors or DualEnrolled
         if (studentType == StudentType.Honors || studentType == StudentType.DualEnrolled)
         {
             gpa += 1;
+        }
+
+        // Apply weighted GPA adjustment if the gradebook is weighted
+        if (IsWeighted)
+        {
+            gpa += 0.5;
         }
 
         // Ensure the GPA does not exceed the maximum value of 4.0
@@ -153,7 +151,6 @@ using GradeBook;
 
         return gpa;
     }
-
 
     public virtual void CalculateStatistics()
         {

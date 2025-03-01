@@ -11,7 +11,7 @@ namespace GradeBook.GradeBooks
 {
     public class StandardGradeBook : BaseGradeBook
     {
-        public StandardGradeBook(string name) : base(name)
+        public StandardGradeBook(string name, bool isWeighted) : base(name, isWeighted)
         {
             Type = GradeBookType.Standard;
         }
@@ -19,7 +19,7 @@ namespace GradeBook.GradeBooks
 
     public class RankedGradeBook : BaseGradeBook
     {
-        public RankedGradeBook(string name) : base(name)
+        public RankedGradeBook(string name, bool isWeighted) : base(name, isWeighted)
         {
             Type = GradeBookType.Ranked;
         }
@@ -87,10 +87,11 @@ namespace GradeBook.GradeBooks
         public string Name { get; set; }
         public List<Student> Students { get; set; }
 
-        public BaseGradeBook(string name)
+        public BaseGradeBook(string name, bool isWeighted)
         {
             Name = name;
             Students = new List<Student>();
+            IsWeighted = isWeighted;
         }
 
         public void AddStudent(Student student)

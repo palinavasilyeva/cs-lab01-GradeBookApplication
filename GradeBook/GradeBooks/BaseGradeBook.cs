@@ -80,7 +80,7 @@ namespace GradeBook.GradeBooks
     }
 
 
-    public class BaseGradeBook
+    abstract public class BaseGradeBook
     {
         public GradeBookType Type { get; set; }
         public string Name { get; set; }

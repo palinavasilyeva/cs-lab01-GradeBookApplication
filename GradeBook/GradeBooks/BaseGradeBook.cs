@@ -16,6 +16,14 @@ namespace GradeBook.GradeBooks
             Type = GradeBookType.Standard;
         }
     }
+
+    public class RankedGradeBook : BaseGradeBook
+    {
+        public RankedGradeBook(string name) : base(name)
+        {
+            Type = GradeBookType.Ranked;
+        }
+    }
     public class BaseGradeBook
     {
         public GradeBookType Type { get; set; }

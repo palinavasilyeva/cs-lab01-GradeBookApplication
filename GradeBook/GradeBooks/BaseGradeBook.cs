@@ -6,78 +6,7 @@ using System.Collections.Generic;
 using System.IO;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-
-namespace GradeBook.GradeBooks
-{
-    public class StandardGradeBook : BaseGradeBook
-    {
-        public StandardGradeBook(string name, bool isWeighted) : base(name,  isWeighted)
-        {
-            Type = GradeBookType.Standard;
-        }
-    }
-
-    public class RankedGradeBook : BaseGradeBook
-    {
-        public RankedGradeBook(string name, bool isWeighted) : base(name, isWeighted)
-        {
-            Type = GradeBookType.Ranked;
-        }
-
-        public override char GetLetterGrade(double averageGrade)
-        {
-            if (Students.Count < 5)
-            {
-                throw new InvalidOperationException("Ranked grading requires at least 5 students.");
-            }
-
-            var sortedGrades = Students.OrderByDescending(s => s.AverageGrade).ToList();
-
-            int studentsInEachPercentile = (int)Math.Ceiling(Students.Count / 5.0);
-
-            for (int i = 0; i < 5; i++)
-            {
-                if (sortedGrades[i * studentsInEachPercentile].AverageGrade <= averageGrade)
-                {
-                    switch (i)
-                    {
-                        case 0:
-                            return 'A';
-                        case 1:
-                            return 'B';
-                        case 2:
-                            return 'C';
-                        case 3:
-                            return 'D'; 
-                        default:
-                            return 'F'; 
-                    }
-                }
-            }
-            return 'F';
-        }
-
-        public override void CalculateStatistics()
-        {
-            if (Students.Count < 5)
-            {
-                Console.WriteLine("Ranked grading requires at least 5 students.");
-                return;
-            }
-            base.CalculateStatistics();
-        }
-
-        public override void CalculateStudentStatistics(string name)
-        {
-            if (Students.Count < 5)
-            {
-                Console.WriteLine("Ranked grading requires at least 5 students.");
-                return;
-            }
-            base.CalculateStudentStatistics(name);
-        }
-
-    }
+using GradeBook;
 
 
     abstract public class BaseGradeBook
@@ -178,38 +107,55 @@ namespace GradeBook.GradeBooks
             }
         }
 
-        public virtual double GetGPA(char letterGrade, StudentType studentType)
+    public virtual double GetGPA(char letterGrade, StudentType studentType)
+    {
+        double gpa = 0;
+
+        // Calculate GPA based on the letter grade
+        switch (letterGrade)
         {
-            double gpa = 0;
-
-            switch (letterGrade)
-            {
-                case 'A':
-                    gpa = 4;
-                    break;
-                case 'B':
-                    gpa = 3;
-                    break;
-                case 'C':
-                    gpa = 2;
-                    break;
-                case 'D':
-                    gpa = 1;
-                    break;
-                case 'F':
-                    gpa = 0;
-                    break;
-            }
-
-            if (studentType == StudentType.Honors || studentType == StudentType.DualEnrolled)
-            {
-                gpa += 1;
-            }
-
-            return gpa;
+            case 'A':
+                gpa = 4;
+                break;
+            case 'B':
+                gpa = 3;
+                break;
+            case 'C':
+                gpa = 2;
+                break;
+            case 'D':
+                gpa = 1;
+                break;
+            case 'F':
+                gpa = 0;
+                break;
         }
 
-        public virtual void CalculateStatistics()
+        // Check if the gradebook is weighted and adjust accordingly
+        if (IsWeighted)
+        {
+            // In a weighted gradebook, you might want to increase the GPA for weighted students
+            // For example, adding an additional point for weighted GPA calculation.
+            gpa += 0.5;  // You can customize this value as needed based on your specific weighting rules.
+        }
+
+        // Add 1 point if the student is Honors or DualEnrolled
+        if (studentType == StudentType.Honors || studentType == StudentType.DualEnrolled)
+        {
+            gpa += 1;
+        }
+
+        // Ensure the GPA does not exceed the maximum value of 4.0
+        if (gpa > 4)
+        {
+            gpa = 4;
+        }
+
+        return gpa;
+    }
+
+
+    public virtual void CalculateStatistics()
         {
             var allStudentsPoints = 0d;
             var campusPoints = 0d;
@@ -354,4 +300,4 @@ namespace GradeBook.GradeBooks
             return JsonConvert.DeserializeObject(json, gradebook);
         }
     }
-}
+
